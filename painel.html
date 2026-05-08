@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel ADM</title>
+
+  <style>
+
+    body{
+      font-family: Arial;
+      background: #111;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1{
+      color: gold;
+    }
+
+    button{
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 5px;
+      font-weight: bold;
+    }
+
+    .sortear{
+      background: gold;
+    }
+
+    .limpar{
+      background: red;
+      color: white;
+    }
+
+    .logout{
+      background: #444;
+      color: white;
+    }
+
+    .participante{
+      background: #222;
+      margin: 10px auto;
+      padding: 10px;
+      border-radius: 10px;
+      max-width: 400px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .vencedor{
+      margin-top: 20px;
+      font-size: 25px;
+      color: gold;
+      font-weight: bold;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <h1>Painel Administrador</h1>
+
+  <button class="sortear" id="sortearBtn">
+    Sortear
+  </button>
+
+  <button class="limpar" id="limparBtn">
+    Limpar Tudo
+  </button>
+
+  <button class="logout" id="logoutBtn">
+    Sair
+  </button>
+
+  <div class="vencedor" id="vencedor"></div>
+
+  <h2>Participantes</h2>
+
+  <div id="listaParticipantes"></div>
+
+  <script type="module">
+
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+
+    import {
+      getFirestore,
+      collection,
+      getDocs,
+      deleteDoc,
+      doc
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    import {
+      getAuth,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    // FIREBASE
+    const firebaseConfig = {
+      apiKey: "AIzaSyBPqYV2mrs1OY-_v_TMk-rZshKABDdj5tk",
+      authDomain: "sorteio-tcc.firebaseapp.com",
+      projectId: "sorteio-tcc",
+      storageBucket: "sorteio-tcc.firebasestorage.app",
+      messagingSenderId: "1074964072990",
+      appId: "1:1074964072990:web:fe6b58d17c7d572d83fc0f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    const lista = document.getElementById("listaParticipantes");
+
+    let participantes = [];
+
+    // CARREGAR PARTICIPANTES
+    async function carregarParticipantes(){
+
+      lista.innerHTML = "";
+
+      participantes = [];
+
+      const querySnapshot = await getDocs(collection(db, "participantes"));
+
+      querySnapshot.forEach((docItem) => {
+
+        const dados = docItem.data();
+
+        participantes.push({
+          id: docItem.id,
+          nome: dados.nome
+        });
+
+        lista.innerHTML += `
+          <div class="participante">
+
+            <span>${dados.nome}</span>
+
+            <button onclick="removerParticipante('${docItem.id}')">
+              ❌
+            </button>
+
+          </div>
+        `;
+      });
+    }
+
+    // REMOVER
+    window.removerParticipante = async (id) => {
+
+      await deleteDoc(doc(db, "participantes", id));
+
+      carregarParticipantes();
+    };
+
+    // LIMPAR TUDO
+    document.getElementById("limparBtn").onclick = async () => {
+
+      const confirmar = confirm("Deseja apagar todos participantes?");
+
+      if(!confirmar) return;
+
+      const querySnapshot = await getDocs(collection(db, "participantes"));
+
+      querySnapshot.forEach(async (docItem) => {
+
+        await deleteDoc(doc(db, "participantes", docItem.id));
+
+      });
+
+      carregarParticipantes();
+    };
+
+    // SORTEAR
+    document.getElementById("sortearBtn").onclick = () => {
+
+      if(participantes.length === 0){
+
+        alert("Nenhum participante.");
+
+        return;
+      }
+
+      const sorteado =
+        participantes[
+          Math.floor(Math.random() * participantes.length)
+        ];
+
+      document.getElementById("vencedor").innerHTML =
+        "🎉 Vencedor: " + sorteado.nome;
+    };
+
+    // LOGOUT
+    document.getElementById("logoutBtn").onclick = async () => {
+
+      await signOut(auth);
+
+      localStorage.removeItem("adminLogado");
+
+      window.location.href = "login.html";
+    };
+
+    // INICIAR
+    carregarParticipantes();
+
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login ADM</title>
+</head>
+
+<body>
+
+  <h2>Login ADM</h2>
+
+  <input id="email" type="email" placeholder="Email">
+
+  <br><br>
+
+  <input id="senha" type="password" placeholder="Senha">
+
+  <br><br>
+
+  <button id="loginBtn">Entrar</button>
+
+  <script type="module">
+
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+
+    import {
+      getAuth,
+      signInWithEmailAndPassword,
+      setPersistence,
+      browserLocalPersistence
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+    import {
+      getFirestore,
+      collection,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    // FIREBASE
+    const firebaseConfig = {
+      apiKey: "AIzaSyBPqYV2mrs1OY-_v_TMk-rZshKABDdj5tk",
+      authDomain: "sorteio-tcc.firebaseapp.com",
+      projectId: "sorteio-tcc",
+      storageBucket: "sorteio-tcc.firebasestorage.app",
+      messagingSenderId: "1074964072990",
+      appId: "1:1074964072990:web:fe6b58d17c7d572d83fc0f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // LOGIN
+    document.getElementById("loginBtn").onclick = async () => {
+
+      const email = document.getElementById("email").value;
+      const senha = document.getElementById("senha").value;
+
+      try {
+
+        await setPersistence(auth, browserLocalPersistence);
+
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          email,
+          senha
+        );
+
+        const user = userCredential.user;
+
+        // VERIFICA ADM
+        const querySnapshot = await getDocs(collection(db, "admins"));
+
+        let isAdmin = false;
+
+        querySnapshot.forEach((doc) => {
+
+          const dados = doc.data();
+
+          if (dados.email === user.email) {
+            isAdmin = true;
+          }
+
+        });
+
+        if (isAdmin) {
+
+          localStorage.setItem("adminLogado", "true");
+
+          alert("Login realizado!");
+
+          window.location.href = "painel.html";
+
+        } else {
+
+          alert("Você não é administrador.");
+        }
+
+      } catch (e) {
+
+        alert(e.message);
+      }
+    };
+
+  </script>
+
+</body>
+
+</html>

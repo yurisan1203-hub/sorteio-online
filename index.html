@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Sorteio Online</title>
+
+  <style>
+
+    *{
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body{
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container{
+      background: white;
+      width: 100%;
+      max-width: 430px;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    h1{
+      color: #333;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .subtitulo{
+      text-align: center;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .contador{
+      background: #4facfe;
+      color: white;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    input{
+      width: 100%;
+      padding: 14px;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      outline: none;
+    }
+
+    button{
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: #4facfe;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    h3{
+      margin-top: 25px;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    ul{
+      list-style: none;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    li{
+      background: #f5f5f5;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .nome{
+      font-weight: bold;
+      color: #333;
+    }
+
+    .contato{
+      color: #777;
+      font-size: 14px;
+      margin-top: 3px;
+    }
+
+    .rodape{
+      text-align: center;
+      margin-top: 20px;
+      color: #777;
+      font-size: 13px;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>🎉 Sorteio Online</h1>
+
+    <p class="subtitulo">
+      Cadastre-se para participar
+    </p>
+
+    <div class="contador" id="contador">
+      Participantes: 0
+    </div>
+
+    <input type="text" id="nome" placeholder="Digite seu nome">
+
+    <input type="text" id="contato" placeholder="Email ou telefone">
+
+    <button id="btnCadastrar">
+      Participar do Sorteio
+    </button>
+
+    <h3>Participantes</h3>
+
+    <ul id="lista"></ul>
+
+    <div class="rodape">
+      Boa sorte 🍀
+    </div>
+
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+  <script>
+
+    // FIREBASE
+    const firebaseConfig = {
+      apiKey: "AIzaSyBPqYV2mrs1OY-_v_TMk-rZshKABDdj5tk",
+      authDomain: "sorteio-tcc.firebaseapp.com",
+      projectId: "sorteio-tcc",
+      storageBucket: "sorteio-tcc.appspot.com",
+      messagingSenderId: "1074964072990",
+      appId: "1:1074964072990:web:fe6b58d17c7d572d83fc0f"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+
+    const db = firebase.firestore();
+
+    const lista = document.getElementById("lista");
+
+    const contador = document.getElementById("contador");
+
+    // LISTA EM TEMPO REAL
+    db.collection("participantes")
+      .onSnapshot((snapshot) => {
+
+      lista.innerHTML = "";
+
+      contador.innerText =
+        "Participantes: " + snapshot.size;
+
+      snapshot.forEach((doc) => {
+
+        const p = doc.data();
+
+        lista.innerHTML += `
+
+          <li>
+
+            <div class="nome">
+              ${p.nome}
+            </div>
+
+            <div class="contato">
+              ${p.contato}
+            </div>
+
+          </li>
+
+        `;
+      });
+    });
+
+    // CADASTRAR
+    async function adicionar(){
+
+      const nome =
+        document.getElementById("nome").value.trim();
+
+      let contato =
+        document.getElementById("contato").value.trim();
+
+      contato = contato.toLowerCase();
+
+      if(nome === "" || contato === ""){
+
+        alert("Preencha todos os campos");
+
+        return;
+      }
+
+      try{
+
+        // USA O CONTATO COMO ID
+        const docRef = db
+          .collection("participantes")
+          .doc(contato);
+
+        // VERIFICA
+        const doc = await docRef.get();
+
+        if(doc.exists){
+
+          alert("Esse contato já está participando 🚫");
+
+          return;
+        }
+
+        // SALVA
+        await docRef.set({
+
+          nome: nome,
+          contato: contato
+
+        });
+
+        // LIMPA
+        document.getElementById("nome").value = "";
+
+        document.getElementById("contato").value = "";
+
+        alert("Participação realizada com sucesso 🎉");
+
+      }catch(erro){
+
+        console.error(erro);
+
+        alert("Erro ao cadastrar");
+      }
+    }
+
+    document.getElementById("btnCadastrar")
+      .onclick = adicionar;
+
+  </script>
+
+</body>
+
+</html>
