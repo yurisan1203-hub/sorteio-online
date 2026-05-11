@@ -2,273 +2,402 @@
 <html lang="pt-BR">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Sorteio Online</title>
+<title>Sorteio Online</title>
 
-  <style>
+<style>
 
-    *{
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
 
-    body{
-      font-family: Arial, sans-serif;
-      min-height: 100vh;
-      background: linear-gradient(135deg, #4facfe, #00f2fe);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
+body{
+  font-family:Arial, sans-serif;
+  min-height:100vh;
+  background:linear-gradient(135deg,#0f172a,#1e293b,#334155);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+  color:white;
+}
 
-    .container{
-      background: white;
-      width: 100%;
-      max-width: 430px;
-      padding: 25px;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    }
+.container{
+  width:100%;
+  max-width:500px;
+  background:rgba(255,255,255,0.08);
+  backdrop-filter:blur(15px);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:25px;
+  padding:25px;
+  box-shadow:0 10px 40px rgba(0,0,0,0.4);
+  animation:fade 0.6s ease;
+}
 
-    h1{
-      color: #333;
-      margin-bottom: 10px;
-      text-align: center;
-    }
+@keyframes fade{
+  from{
+    opacity:0;
+    transform:translateY(20px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
 
-    .subtitulo{
-      text-align: center;
-      color: #666;
-      margin-bottom: 20px;
-    }
+h1{
+  text-align:center;
+  margin-bottom:10px;
+  font-size:32px;
+}
 
-    .contador{
-      background: #4facfe;
-      color: white;
-      padding: 10px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      font-weight: bold;
-      text-align: center;
-    }
+.subtitulo{
+  text-align:center;
+  color:#cbd5e1;
+  margin-bottom:20px;
+}
 
-    input{
-      width: 100%;
-      padding: 14px;
-      margin-bottom: 12px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-      outline: none;
-    }
+.contador{
+  background:linear-gradient(135deg,#38bdf8,#0ea5e9);
+  padding:15px;
+  border-radius:15px;
+  text-align:center;
+  font-weight:bold;
+  margin-bottom:20px;
+  font-size:18px;
+}
 
-    button{
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 10px;
-      background: #4facfe;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+input{
+  width:100%;
+  padding:15px;
+  border:none;
+  border-radius:14px;
+  margin-bottom:12px;
+  font-size:16px;
+  outline:none;
+  background:rgba(255,255,255,0.12);
+  color:white;
+}
 
-    h3{
-      margin-top: 25px;
-      margin-bottom: 15px;
-      color: #333;
-    }
+input::placeholder{
+  color:#cbd5e1;
+}
 
-    ul{
-      list-style: none;
-      max-height: 300px;
-      overflow-y: auto;
-    }
+button{
+  width:100%;
+  padding:15px;
+  border:none;
+  border-radius:14px;
+  font-size:16px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.3s;
+  margin-bottom:10px;
+}
 
-    li{
-      background: #f5f5f5;
-      padding: 12px;
-      border-radius: 10px;
-      margin-bottom: 10px;
-    }
+.btn{
+  background:linear-gradient(135deg,#38bdf8,#0ea5e9);
+  color:white;
+}
 
-    .nome{
-      font-weight: bold;
-      color: #333;
-    }
+.btn:hover{
+  transform:scale(1.02);
+}
 
-    .contato{
-      color: #777;
-      font-size: 14px;
-      margin-top: 3px;
-    }
+.btnSortear{
+  background:linear-gradient(135deg,#22c55e,#16a34a);
+  color:white;
+}
 
-    .rodape{
-      text-align: center;
-      margin-top: 20px;
-      color: #777;
-      font-size: 13px;
-    }
+.pesquisa{
+  margin-top:15px;
+}
 
-  </style>
+ul{
+  list-style:none;
+  max-height:300px;
+  overflow-y:auto;
+  margin-top:15px;
+}
 
+li{
+  background:rgba(255,255,255,0.08);
+  padding:15px;
+  border-radius:15px;
+  margin-bottom:10px;
+  animation:fade 0.3s ease;
+}
+
+.nome{
+  font-weight:bold;
+  font-size:17px;
+}
+
+.contato{
+  color:#cbd5e1;
+  margin-top:5px;
+  font-size:14px;
+}
+
+.vencedor{
+  margin-top:20px;
+  background:linear-gradient(135deg,#facc15,#eab308);
+  color:#111;
+  padding:20px;
+  border-radius:20px;
+  text-align:center;
+  display:none;
+  animation:fade 0.5s ease;
+}
+
+.vencedor h2{
+  margin-bottom:10px;
+}
+
+.rodape{
+  text-align:center;
+  margin-top:20px;
+  color:#cbd5e1;
+}
+
+</style>
 </head>
 
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <h1>🎉 Sorteio Online</h1>
+<h1>🎉 Sorteio Online</h1>
 
-    <p class="subtitulo">
-      Cadastre-se para participar
-    </p>
+<p class="subtitulo">
+Cadastre-se para participar
+</p>
 
-    <div class="contador" id="contador">
-      Participantes: 0
-    </div>
+<div class="contador" id="contador">
+Participantes: 0
+</div>
 
-    <input type="text" id="nome" placeholder="Digite seu nome">
+<input type="text" id="nome" placeholder="Seu nome">
 
-    <input type="text" id="contato" placeholder="Email ou telefone">
+<input type="text" id="contato" placeholder="Email ou telefone">
 
-    <button id="btnCadastrar">
-      Participar do Sorteio
-    </button>
+<button class="btn" id="btnCadastrar">
+Participar do Sorteio
+</button>
 
-    <h3>Participantes</h3>
+<button class="btnSortear" id="btnSortear">
+🏆 Sortear Vencedor
+</button>
 
-    <ul id="lista"></ul>
+<div class="vencedor" id="vencedor"></div>
 
-    <div class="rodape">
-      Boa sorte 🍀
-    </div>
+<input
+class="pesquisa"
+type="text"
+id="pesquisa"
+placeholder="🔍 Pesquisar participante">
 
-  </div>
+<ul id="lista"></ul>
 
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<div class="rodape">
+Boa sorte 🍀
+</div>
 
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+</div>
 
-  <script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 
-    // FIREBASE
-    const firebaseConfig = {
-      apiKey: "AIzaSyBPqYV2mrs1OY-_v_TMk-rZshKABDdj5tk",
-      authDomain: "sorteio-tcc.firebaseapp.com",
-      projectId: "sorteio-tcc",
-      storageBucket: "sorteio-tcc.appspot.com",
-      messagingSenderId: "1074964072990",
-      appId: "1:1074964072990:web:fe6b58d17c7d572d83fc0f"
-    };
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-    firebase.initializeApp(firebaseConfig);
+<script>
 
-    const db = firebase.firestore();
+const firebaseConfig = {
 
-    const lista = document.getElementById("lista");
+  apiKey: "AIzaSyBPqYV2mrs1OY-_v_TMk-rZshKABDdj5tk",
 
-    const contador = document.getElementById("contador");
+  authDomain: "sorteio-tcc.firebaseapp.com",
 
-    // LISTA EM TEMPO REAL
+  projectId: "sorteio-tcc",
+
+  storageBucket: "sorteio-tcc.appspot.com",
+
+  messagingSenderId: "1074964072990",
+
+  appId: "1:1074964072990:web:fe6b58d17c7d572d83fc0f"
+
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+
+const lista = document.getElementById("lista");
+
+const contador = document.getElementById("contador");
+
+const vencedorBox = document.getElementById("vencedor");
+
+let participantes = [];
+
+db.collection("participantes")
+.onSnapshot((snapshot)=>{
+
+  participantes = [];
+
+  lista.innerHTML = "";
+
+  contador.innerText =
+  "Participantes: " + snapshot.size;
+
+  snapshot.forEach((doc)=>{
+
+    const p = doc.data();
+
+    participantes.push(p);
+
+    lista.innerHTML += `
+
+    <li>
+
+      <div class="nome">
+        ${p.nome}
+      </div>
+
+      <div class="contato">
+        ${p.contato}
+      </div>
+
+    </li>
+
+    `;
+  });
+
+});
+
+async function adicionar(){
+
+  const nome =
+  document.getElementById("nome")
+  .value.trim();
+
+  let contato =
+  document.getElementById("contato")
+  .value.trim()
+  .toLowerCase();
+
+  if(nome === "" || contato === ""){
+
+    alert("Preencha todos os campos");
+
+    return;
+  }
+
+  try{
+
+    const docRef =
     db.collection("participantes")
-      .onSnapshot((snapshot) => {
+    .doc(contato);
 
-      lista.innerHTML = "";
+    const doc = await docRef.get();
 
-      contador.innerText =
-        "Participantes: " + snapshot.size;
+    if(doc.exists){
 
-      snapshot.forEach((doc) => {
+      alert("Esse contato já está participando 🚫");
 
-        const p = doc.data();
-
-        lista.innerHTML += `
-
-          <li>
-
-            <div class="nome">
-              ${p.nome}
-            </div>
-
-            <div class="contato">
-              ${p.contato}
-            </div>
-
-          </li>
-
-        `;
-      });
-    });
-
-    // CADASTRAR
-    async function adicionar(){
-
-      const nome =
-        document.getElementById("nome").value.trim();
-
-      let contato =
-        document.getElementById("contato").value.trim();
-
-      contato = contato.toLowerCase();
-
-      if(nome === "" || contato === ""){
-
-        alert("Preencha todos os campos");
-
-        return;
-      }
-
-      try{
-
-        // USA O CONTATO COMO ID
-        const docRef = db
-          .collection("participantes")
-          .doc(contato);
-
-        // VERIFICA
-        const doc = await docRef.get();
-
-        if(doc.exists){
-
-          alert("Esse contato já está participando 🚫");
-
-          return;
-        }
-
-        // SALVA
-        await docRef.set({
-
-          nome: nome,
-          contato: contato
-
-        });
-
-        // LIMPA
-        document.getElementById("nome").value = "";
-
-        document.getElementById("contato").value = "";
-
-        alert("Participação realizada com sucesso 🎉");
-
-      }catch(erro){
-
-        console.error(erro);
-
-        alert("Erro ao cadastrar");
-      }
+      return;
     }
 
-    document.getElementById("btnCadastrar")
-      .onclick = adicionar;
+    await docRef.set({
 
-  </script>
+      nome:nome,
+      contato:contato
+
+    });
+
+    document.getElementById("nome").value = "";
+
+    document.getElementById("contato").value = "";
+
+    alert("Participação realizada 🎉");
+
+  }catch(e){
+
+    alert("Erro ao cadastrar");
+
+  }
+
+}
+
+function sortear(){
+
+  if(participantes.length === 0){
+
+    alert("Nenhum participante");
+
+    return;
+  }
+
+  const random =
+  Math.floor(Math.random() *
+  participantes.length);
+
+  const vencedor =
+  participantes[random];
+
+  vencedorBox.style.display = "block";
+
+  vencedorBox.innerHTML = `
+
+    <h2>🏆 Vencedor</h2>
+
+    <h1>${vencedor.nome}</h1>
+
+    <p>${vencedor.contato}</p>
+
+  `;
+}
+
+document
+.getElementById("btnCadastrar")
+.onclick = adicionar;
+
+document
+.getElementById("btnSortear")
+.onclick = sortear;
+
+document
+.getElementById("pesquisa")
+.addEventListener("input",(e)=>{
+
+  const termo =
+  e.target.value.toLowerCase();
+
+  const itens =
+  document.querySelectorAll("li");
+
+  itens.forEach((item)=>{
+
+    if(item.innerText
+      .toLowerCase()
+      .includes(termo)){
+
+      item.style.display = "block";
+
+    }else{
+
+      item.style.display = "none";
+
+    }
+
+  });
+
+});
+
+</script>
 
 </body>
-
 </html>
