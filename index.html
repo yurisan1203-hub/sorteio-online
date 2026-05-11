@@ -16,7 +16,7 @@
 }
 
 body{
-  font-family:Arial, sans-serif;
+  font-family:Arial,sans-serif;
   min-height:100vh;
   background:linear-gradient(135deg,#0f172a,#1e293b,#334155);
   display:flex;
@@ -158,6 +158,12 @@ li{
   margin-bottom:10px;
 }
 
+.tituloGanhadores{
+  margin-top:25px;
+  margin-bottom:10px;
+  text-align:center;
+}
+
 .rodape{
   text-align:center;
   margin-top:20px;
@@ -181,14 +187,23 @@ Cadastre-se para participar
 Participantes: 0
 </div>
 
-<input type="text" id="nome" placeholder="Seu nome">
+<input
+type="text"
+id="nome"
+placeholder="Seu nome">
 
-<input type="text" id="contato" placeholder="Email ou telefone">
+<input
+type="text"
+id="contato"
+placeholder="Email ou telefone">
 
-<button class="btn" id="btnCadastrar">
+<button
+class="btn"
+id="btnCadastrar">
 Participar do Sorteio
 </button>
 
+<!-- BOTÃO OCULTO -->
 <button
 class="btnSortear"
 id="btnSortear"
@@ -196,7 +211,16 @@ style="display:none;">
 🏆 Sortear Vencedor
 </button>
 
-<div class="vencedor" id="vencedor"></div>
+<div
+class="vencedor"
+id="vencedor">
+</div>
+
+<h2 class="tituloGanhadores">
+🏆 Últimos Ganhadores
+</h2>
+
+<ul id="listaVencedores"></ul>
 
 <input
 class="pesquisa"
@@ -238,14 +262,21 @@ firebase.initializeApp(firebaseConfig);
 
 const db = firebase.firestore();
 
-const lista = document.getElementById("lista");
+const lista =
+document.getElementById("lista");
 
-const contador = document.getElementById("contador");
+const contador =
+document.getElementById("contador");
 
-const vencedorBox = document.getElementById("vencedor");
+const vencedorBox =
+document.getElementById("vencedor");
+
+const listaVencedores =
+document.getElementById("listaVencedores");
 
 let participantes = [];
 
+// PARTICIPANTES
 db.collection("participantes")
 .onSnapshot((snapshot)=>{
 
@@ -264,23 +295,25 @@ db.collection("participantes")
 
     lista.innerHTML += `
 
-    <li>
+      <li>
 
-      <div class="nome">
-        ${p.nome}
-      </div>
+        <div class="nome">
+          ${p.nome}
+        </div>
 
-      <div class="contato">
-        ${p.contato}
-      </div>
+        <div class="contato">
+          ${p.contato}
+        </div>
 
-    </li>
+      </li>
 
     `;
+
   });
 
 });
 
+// CADASTRAR
 async function adicionar(){
 
   const nome =
@@ -305,11 +338,12 @@ async function adicionar(){
     db.collection("participantes")
     .doc(contato);
 
-    const doc = await docRef.get();
+    const doc =
+    await docRef.get();
 
     if(doc.exists){
 
-      alert("Esse contato já está participando 🚫");
+      alert("Esse contato já participa 🚫");
 
       return;
     }
@@ -321,9 +355,13 @@ async function adicionar(){
 
     });
 
-    document.getElementById("nome").value = "";
+    document
+    .getElementById("nome")
+    .value = "";
 
-    document.getElementById("contato").value = "";
+    document
+    .getElementById("contato")
+    .value = "";
 
     alert("Participação realizada 🎉");
 
@@ -335,7 +373,8 @@ async function adicionar(){
 
 }
 
-function sortear(){
+// SORTEAR
+async function sortear(){
 
   if(participantes.length === 0){
 
@@ -351,7 +390,8 @@ function sortear(){
   const vencedor =
   participantes[random];
 
-  vencedorBox.style.display = "block";
+  vencedorBox.style.display =
+  "block";
 
   vencedorBox.innerHTML = `
 
@@ -362,8 +402,52 @@ function sortear(){
     <p>${vencedor.contato}</p>
 
   `;
+
+  // SALVA HISTÓRICO
+  await db.collection("vencedores")
+  .add({
+
+    nome: vencedor.nome,
+    contato: vencedor.contato,
+    data: new Date()
+
+  });
+
 }
 
+// HISTÓRICO
+db.collection("vencedores")
+.orderBy("data","desc")
+.limit(5)
+.onSnapshot((snapshot)=>{
+
+  listaVencedores.innerHTML = "";
+
+  snapshot.forEach((doc)=>{
+
+    const v = doc.data();
+
+    listaVencedores.innerHTML += `
+
+      <li>
+
+        <div class="nome">
+          🏆 ${v.nome}
+        </div>
+
+        <div class="contato">
+          ${v.contato}
+        </div>
+
+      </li>
+
+    `;
+
+  });
+
+});
+
+// EVENTOS
 document
 .getElementById("btnCadastrar")
 .onclick = adicionar;
@@ -372,6 +456,7 @@ document
 .getElementById("btnSortear")
 .onclick = sortear;
 
+// PESQUISA
 document
 .getElementById("pesquisa")
 .addEventListener("input",(e)=>{
@@ -380,7 +465,7 @@ document
   e.target.value.toLowerCase();
 
   const itens =
-  document.querySelectorAll("li");
+  document.querySelectorAll("#lista li");
 
   itens.forEach((item)=>{
 
@@ -388,11 +473,13 @@ document
       .toLowerCase()
       .includes(termo)){
 
-      item.style.display = "block";
+      item.style.display =
+      "block";
 
     }else{
 
-      item.style.display = "none";
+      item.style.display =
+      "none";
 
     }
 
