@@ -7,7 +7,6 @@
   <title>Painel ADM</title>
 
   <style>
-
     body{
       font-family: Arial;
       background: #111;
@@ -16,9 +15,7 @@
       text-align: center;
     }
 
-    h1{
-      color: gold;
-    }
+    h1{ color: gold; }
 
     button{
       padding: 10px 20px;
@@ -29,19 +26,9 @@
       font-weight: bold;
     }
 
-    .sortear{
-      background: gold;
-    }
-
-    .limpar{
-      background: red;
-      color: white;
-    }
-
-    .logout{
-      background: #444;
-      color: white;
-    }
+    .sortear{ background: gold; }
+    .limpar{ background: red; color: white; }
+    .logout{ background: #444; color: white; }
 
     .participante{
       background: #222;
@@ -60,7 +47,6 @@
       color: gold;
       font-weight: bold;
     }
-
   </style>
 
 </head>
@@ -69,22 +55,13 @@
 
   <h1>Painel Administrador</h1>
 
-  <button class="sortear" id="sortearBtn">
-    Sortear
-  </button>
-
-  <button class="limpar" id="limparBtn">
-    Limpar Tudo
-  </button>
-
-  <button class="logout" id="logoutBtn">
-    Sair
-  </button>
+  <button class="sortear" id="sortearBtn">Sortear</button>
+  <button class="limpar" id="limparBtn">Limpar Tudo</button>
+  <button class="logout" id="logoutBtn">Sair</button>
 
   <div class="vencedor" id="vencedor"></div>
 
   <h2>Participantes</h2>
-
   <div id="listaParticipantes"></div>
 
   <script type="module">
@@ -96,7 +73,9 @@
       collection,
       getDocs,
       deleteDoc,
-      doc
+      doc,
+      addDoc,
+      serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     import {
@@ -123,11 +102,24 @@
 
     let participantes = [];
 
+    // 🏆 SALVAR VENCEDOR NO FIREBASE
+    async function salvarVencedor(nome){
+      try{
+        await addDoc(collection(db, "vencedores"), {
+          nome: nome,
+          data: serverTimestamp()
+        });
+
+        console.log("Vencedor salvo no Firebase!");
+      }catch(error){
+        console.error("Erro ao salvar vencedor:", error);
+      }
+    }
+
     // CARREGAR PARTICIPANTES
     async function carregarParticipantes(){
 
       lista.innerHTML = "";
-
       participantes = [];
 
       const querySnapshot = await getDocs(collection(db, "participantes"));
@@ -143,13 +135,8 @@
 
         lista.innerHTML += `
           <div class="participante">
-
             <span>${dados.nome}</span>
-
-            <button onclick="removerParticipante('${docItem.id}')">
-              ❌
-            </button>
-
+            <button onclick="removerParticipante('${docItem.id}')">❌</button>
           </div>
         `;
       });
@@ -157,9 +144,7 @@
 
     // REMOVER
     window.removerParticipante = async (id) => {
-
       await deleteDoc(doc(db, "participantes", id));
-
       carregarParticipantes();
     };
 
@@ -167,37 +152,33 @@
     document.getElementById("limparBtn").onclick = async () => {
 
       const confirmar = confirm("Deseja apagar todos participantes?");
-
       if(!confirmar) return;
 
       const querySnapshot = await getDocs(collection(db, "participantes"));
 
       querySnapshot.forEach(async (docItem) => {
-
         await deleteDoc(doc(db, "participantes", docItem.id));
-
       });
 
       carregarParticipantes();
     };
 
-    // SORTEAR
-    document.getElementById("sortearBtn").onclick = () => {
+    // 🎲 SORTEAR + SALVAR VENCEDOR
+    document.getElementById("sortearBtn").onclick = async () => {
 
       if(participantes.length === 0){
-
         alert("Nenhum participante.");
-
         return;
       }
 
       const sorteado =
-        participantes[
-          Math.floor(Math.random() * participantes.length)
-        ];
+        participantes[Math.floor(Math.random() * participantes.length)];
 
       document.getElementById("vencedor").innerHTML =
         "🎉 Vencedor: " + sorteado.nome;
+
+      // 👉 SALVA NO FIREBASE
+      await salvarVencedor(sorteado.nome);
     };
 
     // LOGOUT
