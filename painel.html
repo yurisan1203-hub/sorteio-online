@@ -43,18 +43,41 @@
       margin-bottom: 10px;
     }
 
+    /* BOTÕES PADRÃO */
     button{
-      padding: 8px 12px;
+      padding: 10px 14px;
       border: none;
       border-radius: 8px;
       cursor: pointer;
       margin: 5px 0;
       font-weight: bold;
+      transition: 0.3s;
     }
 
-    .sortear{ background: gold; }
-    .limpar{ background: red; color: white; width: 100%; }
-    .logout{ background: #333; color: white; width: 100%; }
+    /* BOTÃO SORTEAR (MAIOR E DESTAQUE) */
+    .sortear{
+      background: linear-gradient(135deg, gold, #ffcc00);
+      font-size: 18px;
+      padding: 16px;
+      width: 100%;
+    }
+
+    .sortear:hover{
+      transform: scale(1.05);
+    }
+
+    /* BOTÃO LIMPAR (PADRÃO NEUTRO) */
+    .limpar{
+      background: #444;
+      color: white;
+      width: 100%;
+    }
+
+    .logout{
+      background: #333;
+      color: white;
+      width: 100%;
+    }
 
     .participante{
       background: #222;
@@ -107,33 +130,33 @@
 <body>
 
 <header>
-  🎯 Dashboard ADM - Sistema de Sorteio
+  Dashboard Administrativo - Sistema de Sorteio
 </header>
 
 <div class="container">
 
   <!-- CONTROLE -->
   <div class="card">
-    <h2>🎮 Controle</h2>
+    <h2>Controle</h2>
 
     <div class="vencedor-box" id="vencedor">
       Aguardando sorteio...
     </div>
 
-    <button class="sortear" id="sortearBtn">🎲 Sortear</button>
-    <button class="limpar" id="limparBtn">🗑 Limpar Tudo</button>
-    <button class="logout" id="logoutBtn">🚪 Sair</button>
+    <button class="sortear" id="sortearBtn">Sortear</button>
+    <button class="limpar" id="limparBtn">Limpar Tudo</button>
+    <button class="logout" id="logoutBtn">Sair</button>
   </div>
 
   <!-- PARTICIPANTES -->
   <div class="card">
-    <h2>👥 Participantes</h2>
+    <h2>Participantes</h2>
     <div id="listaParticipantes"></div>
   </div>
 
   <!-- VENCEDORES -->
   <div class="card">
-    <h2>🏆 Últimos Vencedores</h2>
+    <h2>Últimos Vencedores</h2>
     <ul id="listaVencedores" class="lista-vencedores"></ul>
   </div>
 
@@ -142,7 +165,6 @@
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-
 import {
   getFirestore,
   collection,
@@ -157,10 +179,7 @@ import {
   onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-import {
-  getAuth,
-  signOut
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBPqYV2mrs1OY-_v_TMk-rZshKABDdj5tk",
@@ -179,7 +198,6 @@ let participantes = [];
 
 const lista = document.getElementById("listaParticipantes");
 
-// 🏆 salvar vencedor
 async function salvarVencedor(nome){
   await addDoc(collection(db, "vencedores"), {
     nome,
@@ -187,40 +205,30 @@ async function salvarVencedor(nome){
   });
 }
 
-// remover vencedor
 window.removerVencedor = async (id) => {
   await deleteDoc(doc(db, "vencedores", id));
 };
 
-// vencedores
 function carregarVencedores(){
 
   const listaV = document.getElementById("listaVencedores");
 
-  const q = query(
-    collection(db, "vencedores"),
-    orderBy("data", "desc"),
-    limit(5)
-  );
+  const q = query(collection(db, "vencedores"), orderBy("data", "desc"), limit(5));
 
   onSnapshot(q, (snap) => {
-
     listaV.innerHTML = "";
 
     snap.forEach((d) => {
-
       listaV.innerHTML += `
         <li>
-          🏆 ${d.data().nome}
+          ${d.data().nome}
           <button class="btn-del" onclick="removerVencedor('${d.id}')">❌</button>
         </li>
       `;
     });
-
   });
 }
 
-// participantes
 async function carregarParticipantes(){
 
   lista.innerHTML = "";
@@ -246,7 +254,6 @@ window.removerParticipante = async (id) => {
   carregarParticipantes();
 };
 
-// limpar
 document.getElementById("limparBtn").onclick = async () => {
 
   const snap = await getDocs(collection(db, "participantes"));
@@ -258,7 +265,6 @@ document.getElementById("limparBtn").onclick = async () => {
   carregarParticipantes();
 };
 
-// sortear
 document.getElementById("sortearBtn").onclick = async () => {
 
   if(participantes.length === 0){
@@ -266,16 +272,14 @@ document.getElementById("sortearBtn").onclick = async () => {
     return;
   }
 
-  const sorteado =
-    participantes[Math.floor(Math.random() * participantes.length)];
+  const sorteado = participantes[Math.floor(Math.random() * participantes.length)];
 
   document.getElementById("vencedor").innerHTML =
-    "🎉 Vencedor: " + sorteado.nome;
+    "Vencedor: " + sorteado.nome;
 
   await salvarVencedor(sorteado.nome);
 };
 
-// logout
 document.getElementById("logoutBtn").onclick = async () => {
   await signOut(auth);
   localStorage.removeItem("adminLogado");
