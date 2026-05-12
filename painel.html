@@ -48,10 +48,6 @@
       font-weight: bold;
     }
 
-    .lista-vencedores{
-      margin-top: 30px;
-    }
-
     .lista-vencedores li{
       list-style: none;
       background: #222;
@@ -133,20 +129,20 @@
 
     let participantes = [];
 
-    // 🏆 SALVAR VENCEDOR
+    // 🏆 salvar vencedor
     async function salvarVencedor(nome){
       await addDoc(collection(db, "vencedores"), {
-        nome: nome,
+        nome,
         data: serverTimestamp()
       });
     }
 
-    // 🗑️ EXCLUIR VENCEDOR
+    // 🗑 remover vencedor (CORRIGIDO GLOBAL)
     window.removerVencedor = async (id) => {
       await deleteDoc(doc(db, "vencedores", id));
     };
 
-    // 🏆 LISTA DE VENCEDORES (TEMPO REAL)
+    // 🏆 carregar vencedores
     function carregarVencedores(){
 
       const listaV = document.getElementById("listaVencedores");
@@ -181,21 +177,19 @@
       lista.innerHTML = "";
       participantes = [];
 
-      const querySnapshot = await getDocs(collection(db, "participantes"));
+      const snap = await getDocs(collection(db, "participantes"));
 
-      querySnapshot.forEach((docItem) => {
-
-        const dados = docItem.data();
+      snap.forEach((d) => {
 
         participantes.push({
-          id: docItem.id,
-          nome: dados.nome
+          id: d.id,
+          nome: d.data().nome
         });
 
         lista.innerHTML += `
           <div class="participante">
-            <span>${dados.nome}</span>
-            <button onclick="removerParticipante('${docItem.id}')">❌</button>
+            <span>${d.data().nome}</span>
+            <button onclick="removerParticipante('${d.id}')">❌</button>
           </div>
         `;
       });
@@ -208,19 +202,16 @@
 
     document.getElementById("limparBtn").onclick = async () => {
 
-      const confirmar = confirm("Deseja apagar todos participantes?");
-      if(!confirmar) return;
+      const snap = await getDocs(collection(db, "participantes"));
 
-      const querySnapshot = await getDocs(collection(db, "participantes"));
-
-      querySnapshot.forEach(async (docItem) => {
-        await deleteDoc(doc(db, "participantes", docItem.id));
+      snap.forEach(async (d) => {
+        await deleteDoc(doc(db, "participantes", d.id));
       });
 
       carregarParticipantes();
     };
 
-    // 🎲 SORTEAR
+    // 🎲 SORTEIO
     document.getElementById("sortearBtn").onclick = async () => {
 
       if(participantes.length === 0){
@@ -240,15 +231,17 @@
     document.getElementById("logoutBtn").onclick = async () => {
 
       await signOut(auth);
+
       localStorage.removeItem("adminLogado");
+
       window.location.href = "login.html";
     };
 
+    // INIT
     carregarParticipantes();
     carregarVencedores();
 
   </script>
 
 </body>
-
 </html>
