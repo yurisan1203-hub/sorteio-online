@@ -47,6 +47,21 @@
       color: gold;
       font-weight: bold;
     }
+
+    /* 🆕 lista de vencedores */
+    .lista-vencedores{
+      margin-top: 30px;
+    }
+
+    .lista-vencedores li{
+      list-style: none;
+      background: #222;
+      margin: 5px auto;
+      padding: 8px;
+      border-radius: 8px;
+      max-width: 300px;
+    }
+
   </style>
 
 </head>
@@ -64,6 +79,10 @@
   <h2>Participantes</h2>
   <div id="listaParticipantes"></div>
 
+  <!-- 🆕 VENCEDORES -->
+  <h2>🏆 Últimos Vencedores</h2>
+  <ul id="listaVencedores" class="lista-vencedores"></ul>
+
   <script type="module">
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -75,7 +94,11 @@
       deleteDoc,
       doc,
       addDoc,
-      serverTimestamp
+      serverTimestamp,
+      query,
+      orderBy,
+      limit,
+      onSnapshot
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     import {
@@ -102,21 +125,46 @@
 
     let participantes = [];
 
-    // 🏆 SALVAR VENCEDOR NO FIREBASE
+    // 🏆 SALVAR VENCEDOR
     async function salvarVencedor(nome){
       try{
         await addDoc(collection(db, "vencedores"), {
           nome: nome,
           data: serverTimestamp()
         });
-
-        console.log("Vencedor salvo no Firebase!");
       }catch(error){
-        console.error("Erro ao salvar vencedor:", error);
+        console.error(error);
       }
     }
 
-    // CARREGAR PARTICIPANTES
+    // 🆕 CARREGAR VENCEDORES EM TEMPO REAL
+    function carregarVencedores(){
+
+      const listaV = document.getElementById("listaVencedores");
+
+      const q = query(
+        collection(db, "vencedores"),
+        orderBy("data", "desc"),
+        limit(5)
+      );
+
+      onSnapshot(q, (snapshot) => {
+
+        listaV.innerHTML = "";
+
+        snapshot.forEach((docItem) => {
+
+          const v = docItem.data();
+
+          const li = document.createElement("li");
+          li.textContent = "🏆 " + v.nome;
+
+          listaV.appendChild(li);
+        });
+      });
+    }
+
+    // PARTICIPANTES
     async function carregarParticipantes(){
 
       lista.innerHTML = "";
@@ -142,13 +190,11 @@
       });
     }
 
-    // REMOVER
     window.removerParticipante = async (id) => {
       await deleteDoc(doc(db, "participantes", id));
       carregarParticipantes();
     };
 
-    // LIMPAR TUDO
     document.getElementById("limparBtn").onclick = async () => {
 
       const confirmar = confirm("Deseja apagar todos participantes?");
@@ -163,7 +209,7 @@
       carregarParticipantes();
     };
 
-    // 🎲 SORTEAR + SALVAR VENCEDOR
+    // 🎲 SORTEAR
     document.getElementById("sortearBtn").onclick = async () => {
 
       if(participantes.length === 0){
@@ -177,11 +223,9 @@
       document.getElementById("vencedor").innerHTML =
         "🎉 Vencedor: " + sorteado.nome;
 
-      // 👉 SALVA NO FIREBASE
       await salvarVencedor(sorteado.nome);
     };
 
-    // LOGOUT
     document.getElementById("logoutBtn").onclick = async () => {
 
       await signOut(auth);
@@ -193,6 +237,7 @@
 
     // INICIAR
     carregarParticipantes();
+    carregarVencedores(); // 🆕
 
   </script>
 
