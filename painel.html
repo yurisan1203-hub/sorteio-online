@@ -48,7 +48,6 @@
       font-weight: bold;
     }
 
-    /* 🆕 lista de vencedores */
     .lista-vencedores{
       margin-top: 30px;
     }
@@ -60,6 +59,18 @@
       padding: 8px;
       border-radius: 8px;
       max-width: 300px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn-del{
+      background: red;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 3px 8px;
+      cursor: pointer;
     }
 
   </style>
@@ -79,7 +90,6 @@
   <h2>Participantes</h2>
   <div id="listaParticipantes"></div>
 
-  <!-- 🆕 VENCEDORES -->
   <h2>🏆 Últimos Vencedores</h2>
   <ul id="listaVencedores" class="lista-vencedores"></ul>
 
@@ -106,7 +116,6 @@
       signOut
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-    // FIREBASE
     const firebaseConfig = {
       apiKey: "AIzaSyBPqYV2mrs1OY-_v_TMk-rZshKABDdj5tk",
       authDomain: "sorteio-tcc.firebaseapp.com",
@@ -117,7 +126,6 @@
     };
 
     const app = initializeApp(firebaseConfig);
-
     const db = getFirestore(app);
     const auth = getAuth(app);
 
@@ -127,17 +135,18 @@
 
     // 🏆 SALVAR VENCEDOR
     async function salvarVencedor(nome){
-      try{
-        await addDoc(collection(db, "vencedores"), {
-          nome: nome,
-          data: serverTimestamp()
-        });
-      }catch(error){
-        console.error(error);
-      }
+      await addDoc(collection(db, "vencedores"), {
+        nome: nome,
+        data: serverTimestamp()
+      });
     }
 
-    // 🆕 CARREGAR VENCEDORES EM TEMPO REAL
+    // 🗑️ EXCLUIR VENCEDOR
+    window.removerVencedor = async (id) => {
+      await deleteDoc(doc(db, "vencedores", id));
+    };
+
+    // 🏆 LISTA DE VENCEDORES (TEMPO REAL)
     function carregarVencedores(){
 
       const listaV = document.getElementById("listaVencedores");
@@ -156,10 +165,12 @@
 
           const v = docItem.data();
 
-          const li = document.createElement("li");
-          li.textContent = "🏆 " + v.nome;
-
-          listaV.appendChild(li);
+          listaV.innerHTML += `
+            <li>
+              🏆 ${v.nome}
+              <button class="btn-del" onclick="removerVencedor('${docItem.id}')">❌</button>
+            </li>
+          `;
         });
       });
     }
@@ -229,15 +240,12 @@
     document.getElementById("logoutBtn").onclick = async () => {
 
       await signOut(auth);
-
       localStorage.removeItem("adminLogado");
-
       window.location.href = "login.html";
     };
 
-    // INICIAR
     carregarParticipantes();
-    carregarVencedores(); // 🆕
+    carregarVencedores();
 
   </script>
 
