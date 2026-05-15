@@ -2,125 +2,144 @@
 <html lang="pt-BR">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard ADM - Sorteio</title>
 
   <style>
+
     body{
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0f0f0f;
-      color: white;
+      margin:0;
+      font-family:Arial,sans-serif;
+      background:#0f0f0f;
+      color:white;
     }
 
     header{
-      background: #1a1a1a;
-      padding: 15px;
-      text-align: center;
-      font-size: 20px;
-      color: gold;
-      font-weight: bold;
+      background:#1a1a1a;
+      padding:15px;
+      text-align:center;
+      font-size:20px;
+      color:gold;
+      font-weight:bold;
     }
 
     .container{
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 15px;
-      padding: 20px;
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:15px;
+      padding:20px;
     }
 
     .card{
-      background: #1c1c1c;
-      border-radius: 12px;
-      padding: 15px;
-      box-shadow: 0 0 10px rgba(255,215,0,0.1);
+      background:#1c1c1c;
+      border-radius:12px;
+      padding:15px;
+      box-shadow:0 0 10px rgba(255,215,0,0.1);
     }
 
     h2{
-      font-size: 16px;
-      color: gold;
-      margin-bottom: 10px;
+      font-size:16px;
+      color:gold;
+      margin-bottom:10px;
     }
 
-    /* BOTÕES PADRÃO */
     button{
-      padding: 10px 14px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      margin: 5px 0;
-      font-weight: bold;
-      transition: 0.3s;
+      padding:10px 14px;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
+      margin:5px 0;
+      font-weight:bold;
+      transition:0.3s;
     }
 
-    /* BOTÃO SORTEAR (MAIOR E DESTAQUE) */
     .sortear{
-      background: linear-gradient(135deg, gold, #ffcc00);
-      font-size: 18px;
-      padding: 16px;
-      width: 100%;
+      background:linear-gradient(135deg,gold,#ffcc00);
+      font-size:18px;
+      padding:16px;
+      width:100%;
     }
 
     .sortear:hover{
-      transform: scale(1.05);
+      transform:scale(1.03);
     }
 
-    /* BOTÃO LIMPAR (PADRÃO NEUTRO) */
     .limpar{
-      background: #444;
-      color: white;
-      width: 100%;
+      background:#444;
+      color:white;
+      width:100%;
     }
 
     .logout{
-      background: #333;
-      color: white;
-      width: 100%;
+      background:#333;
+      color:white;
+      width:100%;
     }
 
     .participante{
-      background: #222;
-      padding: 8px;
-      margin: 5px 0;
-      border-radius: 8px;
-      display: flex;
-      justify-content: space-between;
+      background:#222;
+      padding:8px;
+      margin:5px 0;
+      border-radius:8px;
+      display:flex;
+      justify-content:space-between;
     }
 
     .vencedor-box{
-      font-size: 20px;
-      color: gold;
-      text-align: center;
-      padding: 10px;
-      background: #111;
-      border-radius: 10px;
-      margin-bottom: 10px;
+      font-size:20px;
+      color:gold;
+      text-align:center;
+      padding:15px;
+      background:#111;
+      border-radius:10px;
+      margin-bottom:10px;
     }
 
     .lista-vencedores li{
-      list-style: none;
-      background: #222;
-      margin: 5px 0;
-      padding: 8px;
-      border-radius: 8px;
-      display: flex;
-      justify-content: space-between;
+      list-style:none;
+      background:#222;
+      margin:5px 0;
+      padding:8px;
+      border-radius:8px;
+      display:flex;
+      justify-content:space-between;
     }
 
     .btn-del{
-      background: red;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      padding: 3px 6px;
-      cursor: pointer;
+      background:red;
+      color:white;
+      border:none;
+      border-radius:5px;
+      padding:3px 6px;
+      cursor:pointer;
     }
 
-    @media(max-width: 900px){
+    .status-auto{
+      text-align:center;
+      margin-top:10px;
+      font-size:15px;
+      color:#00ff88;
+      font-weight:bold;
+    }
+
+    .timer{
+      text-align:center;
+      margin-top:8px;
+      font-size:22px;
+      color:gold;
+      font-weight:bold;
+      background:#111;
+      padding:10px;
+      border-radius:10px;
+    }
+
+    @media(max-width:900px){
+
       .container{
-        grid-template-columns: 1fr;
+        grid-template-columns:1fr;
       }
+
     }
 
   </style>
@@ -137,34 +156,68 @@
 
   <!-- CONTROLE -->
   <div class="card">
+
     <h2>Controle</h2>
 
     <div class="vencedor-box" id="vencedor">
       Aguardando sorteio...
     </div>
 
-    <button class="sortear" id="sortearBtn">Sortear</button>
-    <button class="limpar" id="limparBtn">Limpar Tudo</button>
-    <button class="logout" id="logoutBtn">Sair</button>
+    <button class="sortear" id="sortearBtn">
+      🎲 Sortear Agora
+    </button>
+
+    <button class="sortear" onclick="iniciarSorteioAutomatico()">
+      ▶ Ativar Sorteio Automático
+    </button>
+
+    <button class="limpar" onclick="pararSorteioAutomatico()">
+      ⏹ Parar Sorteio Automático
+    </button>
+
+    <div class="status-auto" id="statusAuto">
+      🔴 Sorteio automático desligado
+    </div>
+
+    <div class="timer" id="timer">
+      30:00
+    </div>
+
+    <button class="limpar" id="limparBtn">
+      Limpar Tudo
+    </button>
+
+    <button class="logout" id="logoutBtn">
+      Sair
+    </button>
+
   </div>
 
   <!-- PARTICIPANTES -->
   <div class="card">
+
     <h2>Participantes</h2>
+
     <div id="listaParticipantes"></div>
+
   </div>
 
   <!-- VENCEDORES -->
   <div class="card">
+
     <h2>Últimos Vencedores</h2>
+
     <ul id="listaVencedores" class="lista-vencedores"></ul>
+
   </div>
 
 </div>
 
 <script type="module">
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+
 import {
   getFirestore,
   collection,
@@ -177,117 +230,311 @@ import {
   orderBy,
   limit,
   onSnapshot
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+}
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  getAuth,
+  signOut
+}
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
 
 const firebaseConfig = {
+
   apiKey: "AIzaSyBPqYV2mrs1OY-_v_TMk-rZshKABDdj5tk",
+
   authDomain: "sorteio-tcc.firebaseapp.com",
+
   projectId: "sorteio-tcc",
+
   storageBucket: "sorteio-tcc.firebasestorage.app",
+
   messagingSenderId: "1074964072990",
+
   appId: "1:1074964072990:web:fe6b58d17c7d572d83fc0f"
+
 };
 
+
 const app = initializeApp(firebaseConfig);
+
 const db = getFirestore(app);
+
 const auth = getAuth(app);
 
 let participantes = [];
 
+let sorteioAutomatico = false;
+
+let intervaloSorteio = null;
+
+let intervaloTimer = null;
+
+let tempoRestante = 1800;
+
 const lista = document.getElementById("listaParticipantes");
 
+
+// SALVAR VENCEDOR
 async function salvarVencedor(nome){
+
   await addDoc(collection(db, "vencedores"), {
+
     nome,
+
     data: serverTimestamp()
+
   });
+
 }
 
+
+// REMOVER VENCEDOR
 window.removerVencedor = async (id) => {
+
   await deleteDoc(doc(db, "vencedores", id));
+
 };
 
+
+// CARREGAR VENCEDORES
 function carregarVencedores(){
 
   const listaV = document.getElementById("listaVencedores");
 
-  const q = query(collection(db, "vencedores"), orderBy("data", "desc"), limit(5));
+  const q = query(
+
+    collection(db, "vencedores"),
+
+    orderBy("data", "desc"),
+
+    limit(5)
+
+  );
 
   onSnapshot(q, (snap) => {
+
     listaV.innerHTML = "";
 
     snap.forEach((d) => {
+
       listaV.innerHTML += `
+
         <li>
+
           ${d.data().nome}
-          <button class="btn-del" onclick="removerVencedor('${d.id}')">❌</button>
+
+          <button class="btn-del"
+          onclick="removerVencedor('${d.id}')">
+
+          ❌
+
+          </button>
+
         </li>
+
       `;
+
     });
+
   });
+
 }
 
+
+// CARREGAR PARTICIPANTES
 async function carregarParticipantes(){
 
   lista.innerHTML = "";
+
   participantes = [];
 
-  const snap = await getDocs(collection(db, "participantes"));
+  const snap =
+    await getDocs(collection(db, "participantes"));
 
   snap.forEach((d) => {
 
-    participantes.push({ id: d.id, nome: d.data().nome });
+    participantes.push({
+
+      id: d.id,
+
+      nome: d.data().nome
+
+    });
 
     lista.innerHTML += `
+
       <div class="participante">
+
         <span>${d.data().nome}</span>
-        <button onclick="removerParticipante('${d.id}')">❌</button>
+
+        <button onclick="removerParticipante('${d.id}')">
+
+          ❌
+
+        </button>
+
       </div>
+
     `;
+
   });
+
 }
 
+
+// REMOVER PARTICIPANTE
 window.removerParticipante = async (id) => {
+
   await deleteDoc(doc(db, "participantes", id));
+
   carregarParticipantes();
+
 };
 
+
+// LIMPAR PARTICIPANTES
 document.getElementById("limparBtn").onclick = async () => {
 
-  const snap = await getDocs(collection(db, "participantes"));
+  const snap =
+    await getDocs(collection(db, "participantes"));
 
   snap.forEach(async (d) => {
+
     await deleteDoc(doc(db, "participantes", d.id));
+
   });
 
   carregarParticipantes();
+
 };
 
-document.getElementById("sortearBtn").onclick = async () => {
+
+// FUNÇÃO PRINCIPAL
+async function realizarSorteio(){
 
   if(participantes.length === 0){
+
     alert("Nenhum participante.");
+
     return;
+
   }
 
-  const sorteado = participantes[Math.floor(Math.random() * participantes.length)];
+  const sorteado = participantes[
+    Math.floor(Math.random() * participantes.length)
+  ];
 
   document.getElementById("vencedor").innerHTML =
-    "Vencedor: " + sorteado.nome;
+
+    "🏆 Vencedor: " + sorteado.nome;
 
   await salvarVencedor(sorteado.nome);
+
+}
+
+
+// TIMER
+function atualizarTimer(){
+
+  const minutos =
+    Math.floor(tempoRestante / 60);
+
+  const segundos =
+    tempoRestante % 60;
+
+  document.getElementById("timer").innerHTML =
+
+    String(minutos).padStart(2, "0")
+    + ":" +
+    String(segundos).padStart(2, "0");
+
+}
+
+
+// INICIAR AUTOMÁTICO
+window.iniciarSorteioAutomatico = () => {
+
+  if(sorteioAutomatico) return;
+
+  sorteioAutomatico = true;
+
+  document.getElementById("statusAuto").innerHTML =
+
+    "🟢 Sorteio automático ativado";
+
+  tempoRestante = 1800;
+
+  atualizarTimer();
+
+
+  intervaloSorteio = setInterval(() => {
+
+    realizarSorteio();
+
+    tempoRestante = 1800;
+
+  }, 1800000);
+
+
+  intervaloTimer = setInterval(() => {
+
+    if(tempoRestante > 0){
+
+      tempoRestante--;
+
+      atualizarTimer();
+
+    }
+
+  }, 1000);
+
 };
 
+
+// PARAR AUTOMÁTICO
+window.pararSorteioAutomatico = () => {
+
+  sorteioAutomatico = false;
+
+  clearInterval(intervaloSorteio);
+
+  clearInterval(intervaloTimer);
+
+  document.getElementById("statusAuto").innerHTML =
+
+    "🔴 Sorteio automático desligado";
+
+};
+
+
+// BOTÃO MANUAL
+document.getElementById("sortearBtn").onclick = () => {
+
+  realizarSorteio();
+
+};
+
+
+// LOGOUT
 document.getElementById("logoutBtn").onclick = async () => {
+
   await signOut(auth);
+
   localStorage.removeItem("adminLogado");
+
   window.location.href = "login.html";
+
 };
 
+
+// INICIAR
 carregarParticipantes();
+
 carregarVencedores();
+
+atualizarTimer();
 
 </script>
 
