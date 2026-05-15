@@ -22,6 +22,7 @@
       font-size:20px;
       color:gold;
       font-weight:bold;
+      box-shadow:0 2px 10px rgba(0,0,0,0.5);
     }
 
     .container{
@@ -54,15 +55,16 @@
       transition:0.3s;
     }
 
+    button:hover{
+      transform:scale(1.02);
+    }
+
     .sortear{
       background:linear-gradient(135deg,gold,#ffcc00);
       font-size:18px;
       padding:16px;
       width:100%;
-    }
-
-    .sortear:hover{
-      transform:scale(1.03);
+      color:black;
     }
 
     .limpar{
@@ -84,16 +86,22 @@
       border-radius:8px;
       display:flex;
       justify-content:space-between;
+      align-items:center;
     }
 
     .vencedor-box{
-      font-size:20px;
+      font-size:22px;
       color:gold;
       text-align:center;
-      padding:15px;
+      padding:20px;
       background:#111;
       border-radius:10px;
       margin-bottom:10px;
+      min-height:60px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:bold;
     }
 
     .lista-vencedores li{
@@ -104,6 +112,7 @@
       border-radius:8px;
       display:flex;
       justify-content:space-between;
+      align-items:center;
     }
 
     .btn-del{
@@ -126,12 +135,13 @@
     .timer{
       text-align:center;
       margin-top:8px;
-      font-size:22px;
+      font-size:40px;
       color:gold;
       font-weight:bold;
       background:#111;
-      padding:10px;
+      padding:15px;
       border-radius:10px;
+      border:2px solid gold;
     }
 
     @media(max-width:900px){
@@ -180,7 +190,7 @@
     </div>
 
     <div class="timer" id="timer">
-      30:00
+      10
     </div>
 
     <button class="limpar" id="limparBtn">
@@ -271,7 +281,7 @@ let intervaloSorteio = null;
 
 let intervaloTimer = null;
 
-let tempoRestante = 1800;
+let tempoRestante = 10;
 
 const lista = document.getElementById("listaParticipantes");
 
@@ -411,8 +421,10 @@ document.getElementById("limparBtn").onclick = async () => {
 };
 
 
-// FUNÇÃO PRINCIPAL
+// FUNÇÃO PRINCIPAL DO SORTEIO
 async function realizarSorteio(){
+
+  await carregarParticipantes();
 
   if(participantes.length === 0){
 
@@ -428,7 +440,7 @@ async function realizarSorteio(){
 
   document.getElementById("vencedor").innerHTML =
 
-    "🏆 Vencedor: " + sorteado.nome;
+    "🏆 " + sorteado.nome;
 
   await salvarVencedor(sorteado.nome);
 
@@ -438,17 +450,9 @@ async function realizarSorteio(){
 // TIMER
 function atualizarTimer(){
 
-  const minutos =
-    Math.floor(tempoRestante / 60);
-
-  const segundos =
-    tempoRestante % 60;
-
   document.getElementById("timer").innerHTML =
 
-    String(minutos).padStart(2, "0")
-    + ":" +
-    String(segundos).padStart(2, "0");
+    tempoRestante;
 
 }
 
@@ -464,31 +468,33 @@ window.iniciarSorteioAutomatico = () => {
 
     "🟢 Sorteio automático ativado";
 
-  tempoRestante = 1800;
+  tempoRestante = 10;
 
   atualizarTimer();
 
 
-  intervaloSorteio = setInterval(() => {
-
-    realizarSorteio();
-
-    tempoRestante = 1800;
-
-  }, 1800000);
-
-
+  // TIMER VISUAL
   intervaloTimer = setInterval(() => {
 
-    if(tempoRestante > 0){
+    tempoRestante--;
 
-      tempoRestante--;
+    atualizarTimer();
 
-      atualizarTimer();
+    if(tempoRestante <= 0){
+
+      tempoRestante = 10;
 
     }
 
-  }, 1000);
+  },1000);
+
+
+  // SORTEIO
+  intervaloSorteio = setInterval(async () => {
+
+    await realizarSorteio();
+
+  },10000);
 
 };
 
